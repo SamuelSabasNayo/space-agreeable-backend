@@ -23,8 +23,12 @@ module.exports = {
       password: {
         type: Sequelize.STRING
       },
-      role: {
-        type: Sequelize.STRING
+      roleId: {
+        type: Sequelize.INTEGER
+      },
+      managerId: {
+        type: Sequelize.INTEGER,
+        allowNull: true
       },
       gender: {
         type: Sequelize.STRING
@@ -32,11 +36,12 @@ module.exports = {
       origin: {
         type: Sequelize.STRING
       },
-      profession: {
-        type: Sequelize.STRING
-      },
       age: {
         type: Sequelize.INTEGER
+      },
+      isVerified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       identification_type: {
         type: Sequelize.STRING

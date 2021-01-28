@@ -11,18 +11,19 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING
     },
-    role: DataTypes.STRING,
+    roleId: {
+      type: DataTypes.INTEGER,
+      defaultValue: 5
+    },
+    managerId: DataTypes.INTEGER,
     gender: DataTypes.STRING,
     origin: DataTypes.STRING,
-    profession: DataTypes.STRING,
     age: DataTypes.INTEGER,
     identification_type: DataTypes.STRING,
     identification_number: DataTypes.STRING,
-    user_image: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'User',
-  });
+    user_image: DataTypes.STRING,
+    isVerified: DataTypes.BOOLEAN,
+  }, {});
 
   User.beforeSave((user, options) => {
     if (user.changed('password')) {
@@ -39,8 +40,12 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  User.associate = function(models) {
+  User.associate = function (models) {
     // associations can be defined here
+    User.belongsTo(models.userRoles, {
+      as: 'role',
+      foreignKey: 'roleId'
+    })
   };
 
   return User;

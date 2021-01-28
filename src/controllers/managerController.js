@@ -1,70 +1,171 @@
-// import JWT from 'jwt-decode';
+/* eslint-disable no-return-assign */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable require-jsdoc */
 import model from '../database/models';
+import requestService from '../services/requestService';
+import userService from '../services/userService';
 
-const { request } = model;
+const { request, User } = model,
+  { findRequestByRoomId, findRequestById, findRequestByManagerId } = requestService,
+  { findUserById, findUserByManagerId } = userService;
 
-// get all requests
-const getAllRequests = async (req, res) => {
-  try {
-    const { role } = req.userData;
+export default class managerController {
+  // get all requests
+  static async getAllRequests(req, res) {
+    try {
+      // query managerId
+      const { id } = req.userData,
+        // finding all users with a provided managerId
+        existingUsers = await findUserByManagerId(id);
+      // console.log(existingUsers);
+      // mapping users Id with the aforementioned managerId
+      const userIds = existingUsers.map((users) => users.id);
 
-    if (role !== 'Manager') return res.status(400).json({ Error: 'Access denied.' });
+      // find all requests corresponding to the aforementioned userIds
+      const allRequests = await findRequestByManagerId(userIds);
 
-    const allRequests = await request.findAll({});
+      if (allRequests.length === 0) return res.status(400).json({ message: res.__('No request found!') });
 
-    if (!allRequests) return res.status(400).json({ message: 'No request found.' });
-
-    return res.status(200).json({ message: allRequests });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
+      return res.status(200).json({ message: res.__('All requests found successfully!'), allRequests });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
   }
-};
 
-// get one request
-const getOneRequest = async (req, res) => {
-  try {
-    const { role } = req.userData;
+  // get one request
+  static async getOneRequest(req, res) {
+    try {
+      // query managerId
+      const { id } = req.userData,
+        // finding all users with a provided managerId
+        existingUsers = await findUserByManagerId(id);
+      // console.log(existingUsers);
+      // mapping users Id with the aforementioned managerId
+      const userIds = existingUsers.map((item) => item.id);
+      // console.log(userIds);
+      // find all requests corresponding to the aforementioned userIds
+      const allRequests = await findRequestByManagerId(userIds);
+      // console.log(allRequests);
 
-    if (role !== 'Manager') return res.status(400).json({ Error: 'Access denied.' });
+      const requestId = req.params.id;
+      // const requestId = 6;
+      // console.log(requestId);
 
-    const { id } = req.params;
-    const existingRequest = await request.findOne({ where: { id } });
+      // map requestIds of the corresponding requests
+      const existingRequestIds = allRequests.map((item) => item.id);
+      // console.log(existingRequestIds);
+      // const oneRequest = await allRequests.find((item) => item.id === requestId);
+      // console.log(oneRequest);
+      // find a request using is provided in params
+      const overallRequest = await findRequestById(requestId);
 
-    if (!existingRequest) return res.status(400).json({ Error: 'Request does not exist.' });
-
-    return res.status(200).json({ message: existingRequest });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
+      if (!overallRequest) return res.status(400).json({ message: res.__('Request does not exist!') });
+      // console.log(existingRequest.id);
+      // check if the obtained request match with the corresponding requests
+      const oneRequest = await existingRequestIds.find((elem) => elem === overallRequest.id);
+      // console.log(oneRequest);
+      if (!oneRequest) return res.status(400).json({ message: res.__('Request does not exist.') });
+      const displayRequest = overallRequest;
+      return res.status(200).json({ message: res.__('Request found successfully!'), displayRequest });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
   }
-};
 
-// update a request
-const updateRequest = async (req, res) => {
-  try {
-    const { role } = req.userData;
+  // create a request
+  static async addRequest(req, res) {
+    try {
+      // // query managerId
+      // const { id } = req.userData,
+      //   // finding all users with a provided managerId
+      //   existingUsers = await findUserByManagerId(id);
+      // console.log(existingUsers);
 
-    if (role !== 'Manager') return res.status(400).json({ Error: 'Access denied.' });
+      // // mapping users Id with the aforementioned managerId
+      // const userIds = existingUsers.map((item) => item.id);
+      // // console.log(userIds);
 
-    const { id } = req.params;
-    const existingRequest = await request.findOne({ where: { id } });
+      // // find all requests corresponding to the aforementioned userIds
+      // const allRequests = await findRequestByManagerId(userIds);
+      // console.log(allRequests);
+      // const newIdRoom = req.body.idRoom;
+      const newIdRoom = req.body.idRoom;
 
-    if (!existingRequest) return res.status(400).json({ Error: 'Request does not exist.' });
+      const allRequests = await findRequestByRoomId(newIdRoom);
 
-    const readyRequest = await request.update(req.body, {
-      where: { id }
-    });
-
-    if (!readyRequest) return res.status(400).json({ message: `Request not updated ${existingRequest}` });
-
-    const updatedRequest = await request.findOne({ where: { id } });
-    return res.status(200).json({ message: 'Request approved.', updatedRequest });
-  } catch (error) {
-    return res.status(500).send(error.message);
+      if (allRequests) return res.status(400).json({ message: 'Room is already occupied!' });
+      const savedRequest = await request.create(req.body);
+      return res.status(201).json({ message: res.__('Request added successfully!'), savedRequest });
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal Server Error!' });
+    }
   }
-};
 
-export default {
-  getAllRequests,
-  getOneRequest,
-  updateRequest
-};
+  // update a request
+  static async updateRequest(req, res) {
+    try {
+      const { id } = req.params;
+      const existingRequest = await findRequestById(id);
+
+      if (!existingRequest) return res.status(404).json({ message: res.__('Request does not exist.') });
+
+      await request.update(req.body, { where: { id } });
+
+      const updatedRequest = await request.findOne({ where: { id } });
+      return res.status(200).json({ message: res.__('Request updated successfully!'), updatedRequest });
+    } catch (error) {
+      return res.status(500).send({ error: error.message });
+    }
+  }
+
+  // assign manager Id
+  static async assignManagerId(req, res) {
+    try {
+      const { _userId, _managerId } = req.body,
+        existingUser = await findUserById(_userId);
+      if (!existingUser) return res.status(404).json({ message: res.__('User does not exist.') });
+      const { roleId } = existingUser;
+
+      if (roleId === 1 || roleId === 2) return res.status(403).json({ message: 'Access denied! to this user!' });
+      const existingManager = await findUserById(_managerId);
+
+      if (!existingManager) return res.json({ message: res.__('Manager Id does not exist.') });
+      const savedManagerId = existingManager.roleId;
+
+      if (savedManagerId !== 2) return res.status(403).json({ message: 'Wrong Manager Id!' });
+      const managerId = _managerId;
+
+      await User.update({ managerId }, { where: { id: _userId } });
+
+      return res.status(201).json({ message: res.__('Manager Id is assigned successfully!') });
+    } catch (error) {
+      return res.status(500).send({ error: 'Internal Server Error!' });
+    }
+  }
+
+  //   try {
+  //     const { id } = req.params,
+  //       existingUser = await findUserById(id);
+  //     // console.log(existingUser);
+  // eslint-disable-next-line max-len
+  // if (!existingUser) return res.status(404).json({ message: res.__('User does not exist.') });
+  //     const { roleId } = existingUser;
+
+  // eslint-disable-next-line max-len
+  // if (roleId === 1 || roleId === 2) return res.status(403).json({ message: 'Access denied! to this user!' });
+  //     const { managerId } = req.body,
+  //       // existingRole = await findRoleById(managerId),
+  //       existingManager = await findUserById(managerId);
+
+  //     if (!existingManager) return res.json({ message: res.__('Manager Id does not exist.') });
+  //     const savedManagerId = existingManager.roleId;
+  //       // console.log(existingManager);
+  //       console.log(savedManagerId);
+  //     // console.log(existingRole.id);
+  //     if (savedManagerId !== 2) return res.status(403).json({ message: 'Wrong Manager Id!' });
+  //     return res.status(200).json({ message: res.__('Manager Id is assigned successfully!') });
+  //   } catch (error) {
+  //     return res.status(500).send({ error: error.message });
+  //   }
+  // }
+}
