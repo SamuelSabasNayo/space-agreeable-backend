@@ -128,30 +128,4 @@ export default class managerController {
       return res.status(500).send({ error: 'Internal Server Error!' });
     }
   }
-
-  //   try {
-  //     const { id } = req.params,
-  //       existingUser = await findUserById(id);
-  //     // console.log(existingUser);
-  // eslint-disable-next-line max-len
-  // if (!existingUser) return res.status(404).json({ message: res.__('User does not exist.') });
-  //     const { roleId } = existingUser;
-
-  // eslint-disable-next-line max-len
-  // if (roleId === 1 || roleId === 2) return res.status(403).json({ message: 'Access denied! to this user!' });
-  //     const { managerId } = req.body,
-  //       // existingRole = await findRoleById(managerId),
-  //       existingManager = await findUserById(managerId);
-
-  //     if (!existingManager) return res.json({ message: res.__('Manager Id does not exist.') });
-  //     const savedManagerId = existingManager.roleId;
-  //       // console.log(existingManager);
-  //       console.log(savedManagerId);
-  //     // console.log(existingRole.id);
-  //     if (savedManagerId !== 2) return res.status(403).json({ message: 'Wrong Manager Id!' });
-  //     return res.status(200).json({ message: res.__('Manager Id is assigned successfully!') });
-  //   } catch (error) {
-  //     return res.status(500).send({ error: error.message });
-  //   }
-  // }
 }
