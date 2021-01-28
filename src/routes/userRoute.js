@@ -1,7 +1,13 @@
 import { Router } from 'express';
 import multer from 'multer';
-import userController from '../controllers/userController';
 import SchemaValidator from '../middlewares/SchemaValidator';
+import checkAuthentication from '../middlewares/check-auth';
+import superAdminCheck from '../middlewares/superAdmin.check';
+import {
+  signup, signin, getAllUsers, getUserById, updateUserById, deleteUserById
+} from '../controllers/user';
+
+const { superAdminAuth } = superAdminCheck;
 
 const router = Router();
 const validateRequest = SchemaValidator(true);
@@ -95,7 +101,7 @@ const upload = multer({
  *            type: string
  *            format: binary
  */
-router.post('/signup', upload.single('user_image'), validateRequest, userController.signup);
+router.post('/signup', upload.single('user_image'), validateRequest, signup);
 
 /**
  * @swagger
@@ -126,6 +132,96 @@ router.post('/signup', upload.single('user_image'), validateRequest, userControl
  *          password:
  *            type: string
  */
-router.post('/signin', validateRequest, userController.signin);
+router.post('/signin', validateRequest, signin);
+
+router.get('/', checkAuthentication, getAllUsers);
+
+/**
+ * @swagger
+ * /user/{_id}:
+ *   get:
+ *     summary: Returns a user based on ID
+ *     tags: [Users]
+ *     description: Returns a single user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: _id
+ *         description: Particular User Object's ID
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: A user
+ *       500:
+ *         description: Server Error
+ */
+router.get('/:id', checkAuthentication, getUserById);
+
+/**
+ * @swagger
+ *
+ * /user/{id}:
+ *    put:
+ *      summary: User update based on ID
+ *      tags: [Users]
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: User ID
+ *          required: true
+ *      requestBody:
+ *        required: false
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/user'
+ *      responses:
+ *        "201":
+ *          description: A user schema
+ *
+ * components:
+ *    schemas:
+ *      user:
+ *        type: object
+ *        required:
+ *          - firstname
+ *          - lastname
+ *          - email
+ *          - password
+ *        properties:
+ *          firstname:
+ *            type: string
+ *          lastname:
+ *            type: string
+ *          email:
+ *            type: string
+ *          password:
+ *            type: string
+
+ */
+router.put('/:id', checkAuthentication, updateUserById);
+
+/**
+ * @swagger
+ * /user/{id}:
+ *   delete:
+ *     summary: Deletes a user based on ID
+ *     tags: [Users]
+ *     description: Deletes a single user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: User's id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ */
+router.delete('/:id', superAdminAuth, deleteUserById);
 
 module.exports = router;

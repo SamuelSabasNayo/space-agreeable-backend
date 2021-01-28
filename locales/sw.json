@@ -1,0 +1,31 @@
+{
+	"Welcome to barefoot nomad": "Karibu kwa barefoot nomad",
+	"Email already registered": "Barua pepe tayari imesajiliwa",
+	"User registered": "Mtumiaji amesajiliwa",
+	"Authentication failed. User not found.": "",
+	"Authentication failed. Wrong password.": "Uthibitishaji umeshindwa. Mtumiaji hajapatikana.",
+	"Error": "Kosa",
+	"No User with the specified id": "Hakuna Mtumiaji aliye na kitambulisho maalum",
+	"User update failed, a user with the specified email exist": "Sasisho la mtumiaji limeshindwa, mtumiaji aliye na barua pepe maalum yupo",
+	"User updated successfully": "Mtumiaji amesasishwa kwa mafanikio",
+	"Cannot update User with such id. User not found": "Haiwezi kusasisha Mtumiaji na kitambulisho kama hicho. Mtumiaji hajapatikana",
+	"User deleted successfully!": "Mtumiaji amefutwa kwa mafanikio!",
+	"You are logged out now!": "Umetoka nje sasa!",
+	"You attempt to assign a room to the hotel which does not exist ! Room not created.": "Unajaribu kupeana chumba kwa hoteli ambayo haipo! Chumba hakijaundwa.",
+	"Room with the specified ID does not exists": "Chumba kilicho na kitambulisho kilichotajwa hakipo",
+	"Room deleted successfully.": "Chumba kimefutwa.",
+	"Hotel deleted successfully.": "Hoteli imefutwa.",
+	
+	"Please login!": "Tafadhali ingia!",
+	"No role assigned!": "Hakuna jukumu lililopewa!",
+	"Access denied!": "Ufikiaji umekataliwa!",
+	"Not found!": "Haipatikani!",
+	
+	"No request found.": "Hakuna ombi lililopatikana.",
+	"All requests found successfully!": "Maombi yote yamefanikiwa!",
+	"Request does not exist.": "Ombi halipo.",
+	"Request found successfully!": "Ombi limepatikana kwa mafanikio!",
+	"Request added successfully!": "Ombi limeongezwa kwa mafanikio!",
+	"Request updated successfully!": "Ombi limesasishwa kwa mafanikio!",
+	"Internal server error!": "Hitilafu ya seva ya ndani!"
+}

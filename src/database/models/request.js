@@ -1,23 +1,40 @@
-const { Model } = require('sequelize');
-
+'use strict';
+const {Model} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Request extends Model {
+  class request extends Model {
+  
     static associate(models) {
-      // define association here
+   
+      //association with room table
+      request.belongsTo(models.RoomModel, {
+        as: "room",
+        foreignKey: "idRoom",
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      });
     }
-  }
-  Request.init({
+  };
+  request.init({
     idUser: DataTypes.INTEGER,
-    idRoom: DataTypes.INTEGER,
-    dateStart: DataTypes.DATE,
-    dateEnd: DataTypes.DATE,
-    isApproved: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
+    idRoom: {
+      type: DataTypes.INTEGER,
+    allowNull: false
+  },
+    dateStart: {
+      type: DataTypes.DATE, 
+      allowNull: false
+    },
+    dateEnd: {
+      type: DataTypes.DATE, 
+      allowNull: false
+    },
+    requestStatus: {
+      type: DataTypes.STRING,
+      defaultValue: "PENDING"
     }
   }, {
     sequelize,
     modelName: 'request',
   });
-  return Request;
+  return request;
 };

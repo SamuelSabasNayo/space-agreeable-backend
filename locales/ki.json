@@ -1,0 +1,31 @@
+{
+	"Welcome to barefoot nomad": "Murakaza neza kuri barefoot nomad",
+	"Email already registered": "Imeri yamaze kwiyandikisha",
+	"User registered": "Umukoresha yiyandikishije",
+	"Authentication failed. User not found.": "Kwemeza byarananiranye. Umukoresha ntabwo yabonetse.",
+	"Authentication failed. Wrong password.": "Kwemeza byarananiranye. Ijambobanga ritari ryo.",
+	"Error": "Ikosa",
+	"No User with the specified id": "Nta mukoresha ufite iyo ID",
+	"User update failed, a user with the specified email exist": "Kuvugurura kwabakoresha byarananiranye, umukoresha ufite imeri yihariye irahari",
+	"User updated successfully": "Umukoresha agevuguruwe neza",
+	"Cannot update User with such id. User not found": "Ntushobora kuvugurura Umukoresha hamwe niyi id. Umukoresha ntabwo yabonetse",
+	"User deleted successfully!": "Umukoresha yasibwe neza!",
+	"You are logged out now!": "Wasohotse ubu!",
+	"You attempt to assign a room to the hotel which does not exist ! Room not created.": "Uragerageza guha icyumba hoteri itabaho! Icyumba nticyakozwe.",
+	"Room with the specified ID does not exists": "Icyumba gifite indangamuntu cyihariye ntikibaho",
+	"Room deleted successfully.": "Icyumba cyasibwe neza.",
+	"Hotel deleted successfully.": "Hotel yasibwe neza.",
+	
+	"Please login!": "Nyamuneka injira!",
+	"No role assigned!": "Nta ruhare rwahawe!",
+	"Access denied!": "Kwinjira byanze!",
+	"Not found!": "Ntibabonetse!",
+	
+	"No request found.": "Nta cyifuzo cyabonetse.",
+	"All requests found successfully!": "Ibyifuzo byose byabonetse neza!",
+	"Request does not exist.": "Icyifuzo ntikibaho.",
+	"Request found successfully!": "Ibyifuzo byabonetse neza!",
+	"Request added successfully!": "Ibyifuzo byongeweho neza!",
+	"Request updated successfully!": "Ibyifuzo byavuguruwe neza!",
+	"Internal server error!": "Ikosa rya seriveri imbere!"
+}
