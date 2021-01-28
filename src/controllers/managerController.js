@@ -17,7 +17,7 @@ export default class managerController {
       const { id } = req.userData,
         // finding all users with a provided managerId
         existingUsers = await findUserByManagerId(id);
-      // console.log(existingUsers);
+
       // mapping users Id with the aforementioned managerId
       const userIds = existingUsers.map((users) => users.id);
 
@@ -39,31 +39,26 @@ export default class managerController {
       const { id } = req.userData,
         // finding all users with a provided managerId
         existingUsers = await findUserByManagerId(id);
-      // console.log(existingUsers);
+
       // mapping users Id with the aforementioned managerId
       const userIds = existingUsers.map((item) => item.id);
-      // console.log(userIds);
+
       // find all requests corresponding to the aforementioned userIds
       const allRequests = await findRequestByManagerId(userIds);
-      // console.log(allRequests);
 
       const requestId = req.params.id;
-      // const requestId = 6;
-      // console.log(requestId);
 
       // map requestIds of the corresponding requests
       const existingRequestIds = allRequests.map((item) => item.id);
-      // console.log(existingRequestIds);
-      // const oneRequest = await allRequests.find((item) => item.id === requestId);
-      // console.log(oneRequest);
+
       // find a request using is provided in params
       const overallRequest = await findRequestById(requestId);
 
       if (!overallRequest) return res.status(400).json({ message: res.__('Request does not exist!') });
-      // console.log(existingRequest.id);
+
       // check if the obtained request match with the corresponding requests
       const oneRequest = await existingRequestIds.find((elem) => elem === overallRequest.id);
-      // console.log(oneRequest);
+
       if (!oneRequest) return res.status(400).json({ message: res.__('Request does not exist.') });
       const displayRequest = overallRequest;
       return res.status(200).json({ message: res.__('Request found successfully!'), displayRequest });

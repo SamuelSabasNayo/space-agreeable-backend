@@ -9,26 +9,26 @@ const port = process.env.PORT || 3000;
 
 const swaggerOptions = {
   swaggerDefinition: {
-    openapi: '3.0.0',
-    info: {
+	  openapi: '3.0.0',
+	  info: {
       title: 'Bare foot nomad project',
       version: '1.0.0',
       description: 'API for Bare Foot Nomad Project'
-    },
-    basePath: '/',
-    components: {
+	  },
+	  basePath: '/',
+	  components: {
       securitySchemes: {
-        bearerAuth: {
+		  bearerAuth: {
           type: 'http',
           scheme: 'bearer',
           in: 'header',
           bearerFormat: 'JWT',
-        }
+		  }
       }
-    },
-    security: [{
+	  },
+	  security: [{
       bearerAuth: []
-    }]
+	  }]
   },
   apis: ['src/utils/index.js']
 };

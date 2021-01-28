@@ -14,7 +14,7 @@ const createAdmin = async () => {
     console.log(`FATAL: create ${roleName} role first.[Hint: run 'npm run role:create' to create role]`);
     return;
   }
-  const hashedPswd = process.env.ADMIN_PASSWORD;
+  const { ADMIN_PASSWORD } = process.env;
 
   const admin = {
     firstname: 'Nomad',
@@ -22,7 +22,7 @@ const createAdmin = async () => {
     email: 'spacenomad@gmail.com',
     roleId: role.id,
     isVerified: true,
-    password: hashedPswd,
+    password: ADMIN_PASSWORD,
     createdAt: new Date(),
     updatedAt: new Date()
   };

@@ -1,22 +1,58 @@
-const controller = require('../controllers/requestController');
-const { Router } = require('express');
-import authRequest from "../middlewares/check-auth";
-
+/* eslint-disable max-len */
+import { Router } from 'express';
+import authRequest from '../middlewares/check-auth';
+import requestController from '../controllers/requestController';
 
 const router = Router();
 
-const createR = controller.createRequest;
-const updateR = controller.updateRequest; 
-const deleteR = controller.deleteRequest;
-const getR = controller.getAllRequests;
-
+const {
+  getAllRequests,
+  getOneRequest,
+  createRequest,
+  updateRequest,
+  deleteRequest
+} = requestController;
 
 /**
  * @swagger
- * /Request:
+ * /requests:
+ *  get:
+ *    tags: [Request Accommodation]
+ *    summary: Authenticated user can get all requests.
+ *    description: Authenticated user can get all requests from database.
+ *    responses:
+ *      '200':
+ *        description: Requests are displayed successfuly.
+*/
+router.get('/', authRequest, getAllRequests);
+
+/**
+ * @swagger
+ * /requests/{id}:
+ *  get:
+ *    tags: [Request Accommodation]
+ *    summary: Authenticated user can get a request.
+ *    description: Request is desplayed from DB.
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *        description: request id
+ *    responses:
+ *      '200':
+ *        description: Request is displayed successfuly.
+*/
+router.get('/:id', authRequest, getOneRequest);
+
+/**
+ * @swagger
+ * /requests:
  *    post:
- *      tags: [REQUESTING ACCOMMODATION]
- *      summary: Authenticated user can request an accommodation in a hotel
+ *      tags: [Request Accommodation]
+ *      summary: Authenticated user can add arequest in a hotel
  *      requestBody:
  *        required: true
  *        content:
@@ -25,8 +61,7 @@ const getR = controller.getAllRequests;
  *              $ref: '#/components/schemas/requests'
  *      responses:
  *        "200":
- *          description: A request schema
- *
+ *          description: Request added successfully!
  * components:
  *    schemas:
  *      requests:
@@ -35,7 +70,6 @@ const getR = controller.getAllRequests;
  *          - dateStart
  *          - dateEnd
  *          - idRoom
- * 
  *        properties:
  *          dateStart:
  *            type: string
@@ -44,57 +78,19 @@ const getR = controller.getAllRequests;
  *          idRoom:
  *             type: number
  */
-router.post('/', authRequest, createR);
-// router.post('/', authRequest, createRequest,createR);
-
-
-/**
- * @swagger
- * /Request:
- *  get:
- *    tags: [REQUESTING ACCOMMODATION]
- *    summary: Authenticated user can retrieve all requests from database
- *    description: Requests are desplayed from DB
- *    responses:
- *      '200':
- *        description: Requests are displayed succesffuly.
- *      
-*/
-router.get('/', authRequest, getR);
-
-/**
- * @swagger
- * /Request/{id}:
- *   delete:
- *     summary: Deletes a request based on ID
- *     tags: [REQUESTING ACCOMMODATION] 
- *     description: Deletes a single request
- *     produces:
- *       - application/json
- *     parameters:
- *       - name: id
- *         description: Request's id
- *         in: path
- *         required: true
- *         type: string
- *     responses:
- *       200:
- *         description: Successfully deleted
- */
-router.delete('/:idRequest', authRequest, deleteR);
-
+router.post('/', authRequest, createRequest);
 
 /**
  * @swagger
  *
- * /Request/{id}:
+ * /requests/{id}:
  *    put:
- *      summary: Update a request based on ID
- *      tags: [REQUESTING ACCOMMODATION]
+ *      tags: [Request Accommodation]
+ *      summary: User can update a request with status PENDING.
  *      parameters:
  *        - name: id
  *          in: path
- *          description: Request ID
+ *          description: request ID
  *          required: true
  *      requestBody:
  *        required: false
@@ -104,8 +100,7 @@ router.delete('/:idRequest', authRequest, deleteR);
  *              $ref: '#/components/schemas/requests'
  *      responses:
  *        "201":
- *          description: A request schema
- *
+ *          description: Request updated successfully!
  * components:
  *    schemas:
  *      requests:
@@ -115,17 +110,34 @@ router.delete('/:idRequest', authRequest, deleteR);
  *          - dateEnd
  *          - idRoom
  *        properties:
- *       
  *          dateStart:
  *            type: string
  *          dateEnd:
  *            type: string
  *          idRoom:
  *             type: number
- *
  */
-router.put('/:idRequest', authRequest,updateR);
+router.put('/:id', authRequest, updateRequest);
 
-module.exports = router;
+/**
+ * @swagger
+ * /requests/{id}:
+ *   delete:
+ *     tags: [Request Accommodation]
+ *     summary: Authenticated user can delete request.
+ *     description: Authenticated user can delete request from DB.
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: request Id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Request deleted successfully!
+ */
+router.delete('/:id', authRequest, deleteRequest);
 
-
+export default router;

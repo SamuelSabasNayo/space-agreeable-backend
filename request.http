@@ -1,0 +1,11 @@
+
+###Add new facility
+POST http://127.0.0.1:5000/facility/addNew 
+content-type: application/json
+{
+  "location":"Kigali",
+  "address":"amahoro ev 32'st",
+  "images":"sosdoskds.jpg",
+  "roomNumber":"12",
+  "roomDetails":"{sdlksldks:sdsds,sdsdsds:sdksjdskdj}"
+} 
