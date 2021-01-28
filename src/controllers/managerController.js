@@ -75,20 +75,6 @@ export default class managerController {
   // create a request
   static async addRequest(req, res) {
     try {
-      // // query managerId
-      // const { id } = req.userData,
-      //   // finding all users with a provided managerId
-      //   existingUsers = await findUserByManagerId(id);
-      // console.log(existingUsers);
-
-      // // mapping users Id with the aforementioned managerId
-      // const userIds = existingUsers.map((item) => item.id);
-      // // console.log(userIds);
-
-      // // find all requests corresponding to the aforementioned userIds
-      // const allRequests = await findRequestByManagerId(userIds);
-      // console.log(allRequests);
-      // const newIdRoom = req.body.idRoom;
       const newIdRoom = req.body.idRoom;
 
       const allRequests = await findRequestByRoomId(newIdRoom);
