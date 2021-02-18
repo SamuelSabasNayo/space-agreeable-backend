@@ -1,3 +1,5 @@
+/* eslint-disable no-sequences */
+/* eslint-disable no-unused-expressions */
 import bcrypt from 'bcrypt';
 
 module.exports = (sequelize, DataTypes) => {
@@ -23,7 +25,11 @@ module.exports = (sequelize, DataTypes) => {
     identification_number: DataTypes.STRING,
     user_image: DataTypes.STRING,
     isVerified: DataTypes.BOOLEAN,
-  }, {});
+    savedData: DataTypes.ARRAY(DataTypes.STRING)
+  }, {
+    sequelize,
+    modelName: 'User'
+  });
 
   User.beforeSave((user, options) => {
     if (user.changed('password')) {
@@ -45,7 +51,11 @@ module.exports = (sequelize, DataTypes) => {
     User.belongsTo(models.userRoles, {
       as: 'role',
       foreignKey: 'roleId'
-    })
+    }),
+    User.hasMany(models.Reaction, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
   };
 
   return User;

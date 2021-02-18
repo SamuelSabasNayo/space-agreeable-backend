@@ -165,7 +165,7 @@ describe('Roles', () => {
   describe('PUT /roles/id', () => {
     it('should return 400 if one field is missing', async () => {
       const newRole = {
-        name: 'MEMBER',
+        name: 'MANAGER',
         description: ''
       };
       const newUser = await User.findAll();
@@ -268,19 +268,20 @@ describe('Roles', () => {
           throw new Error(err);
         });
     });
-    // it('should delete a specified role', async () => {
-    //   const newUser = await User.findAll();
-    //   roleId = newUser[1].dataValues.id;
-    //   await chai.request(app)
-    //     .delete(`/roles/${roleId}`)
-    //     .set('authorization', token)
-    //     .then((res) => {
-    //       expect(res).has.status(200);
-    //       expect(res.body.message).to.match(/Role deleted successfully!/i);
-    //     })
-    //     .catch((err) => {
-    //       throw new Error(err);
-    //     });
-    // });
+    it('should delete a specified role', async () => {
+      const newUser = await User.findAll();
+      roleId = newUser[1].dataValues.id;
+      roleId = 6;
+      await chai.request(app)
+        .delete(`/roles/${roleId}`)
+        .set('authorization', token)
+        .then((res) => {
+          expect(res).has.status(404);
+          expect(res.body).to.have.property('message');
+        })
+        .catch((err) => {
+          throw new Error(err);
+        });
+    });
   });
 });

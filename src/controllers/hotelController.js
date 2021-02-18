@@ -29,7 +29,11 @@ const deleteHotel = async (req, res) => {
       where: { id }
     });
     if (deleted) {
-      return res.status(200).json({ message: 'Hotel deleted successfully.' });
+      const deletedRoom = await model.RoomModel.destroy({
+        where: { hotelId : id }
+      })
+      if(deletedRoom)
+        return res.status(200).json({ message: res.__('Hotel deleted successfully.' )});
     }
     throw new Error('Hotel not found');
   } catch (error) {

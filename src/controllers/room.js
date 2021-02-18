@@ -24,7 +24,7 @@ const createRoom = async (req, res) => {
       }
       
     }else{
-      return res.json({message: "You attempt to assign a room to the hotel which does not exist ! Room not created."})
+      return res.json({message: res.__("You attempt to assign a room to the hotel which does not exist ! Room not created.")})
     }
     return res.status(200)
 
@@ -56,7 +56,7 @@ const getRoomById = async (req, res) => {
     if (room) {
       return res.status(200).json({ room });
     }
-    return res.status(404).json({meassage:'Room with the specified ID does not exists'});
+    return res.status(404).json({meassage: res.__('Room with the specified ID does not exists')});
   } catch (error) {
 
     return res.status(500).send(error.message);
@@ -114,7 +114,7 @@ const deleteRoom = async (req, res) => {
       where: { id: roomId }
     });
     if (deleted) {
-      return res.status(200).json({message:"Room deleted successfully."});
+      return res.status(200).json({message: res.__("Room deleted successfully.")});
     }
     throw new Error("Room not found");
   } catch (error) {

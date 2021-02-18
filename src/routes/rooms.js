@@ -1,17 +1,10 @@
-
-const { Router } = require('express');
+/* eslint-disable object-curly-newline */
+import { Router } from 'express';
+import protection from '../middlewares/check-auth';
+import roomController from '../controllers/room';
 
 const router = Router();
-
-const protection = require('../middlewares/check-auth');
-const controller = require('../controllers/room');
-
-const createRoom = controller.createRoom;
-const getRooms = controller.getAllRooms;
-const getRoom = controller.getRoomById;
-const deleteRoom = controller.deleteRoom;
-const updateRoom = controller.updateRoom;
-const getHotelRooms = controller.roomByHotel;
+const { createRoom, getRooms, getRoom, deleteRoom, updateRoom, getHotelRooms } = roomController;
 
 /**
  * @swagger
@@ -29,7 +22,6 @@ const getHotelRooms = controller.roomByHotel;
  *      responses:
  *        "201":
  *          description: Article schema
- *
  * components:
  *    schemas:
  *      room:
@@ -40,7 +32,7 @@ const getHotelRooms = controller.roomByHotel;
  *          - roomLabel
  *          - hotelId
  *          - status
- *          - price 
+ *          - price
  *        properties:
  *          roomType:
  *            type: string
@@ -56,18 +48,14 @@ const getHotelRooms = controller.roomByHotel;
  *              type: string
  *          roomImage:
  *              type: string
- *                      
- *       
  */
-
-
-router.post('/rooms',protection,createRoom);
+router.post('/rooms', protection, createRoom);
 
 /**
  * @swagger
  * /rooms/{roomId}:
  *   get:
- *     summary: For getting a single room 
+ *     summary: For getting a single room
  *     tags:
  *       - Rooms
  *     description: Returns a single room
@@ -83,10 +71,8 @@ router.post('/rooms',protection,createRoom);
  *         description: A single room
  *       500:
  *         description: Server Error
- */     
+ */
 router.get('/rooms/:roomId', getRoom);
-
-
 
 /**
  * @swagger
@@ -115,7 +101,7 @@ router.get('/rooms/:roomId', getRoom);
  *          - roomLabel
  *          - hotelId
  *          - status
- *          - price 
+ *          - price
  *        properties:
  *          roomType:
  *            type: string
@@ -129,11 +115,9 @@ router.get('/rooms/:roomId', getRoom);
  *              type: string
  *          price:
  *              type: string
- *                      
- *       
+ *
+ *
  */
-
-
 
 /**
  * @swagger
@@ -161,7 +145,7 @@ router.get('/rooms/:roomId', getRoom);
  *    schemas:
  *      room:
  *        type: object
- *        required: 
+ *        required:
  *          - roomType
  *          - description
  *          - roomLabel
@@ -175,7 +159,7 @@ router.get('/rooms/:roomId', getRoom);
  *            type: string
  *          roomLabel:
  *            type: string
- *          hotelId: 
+ *          hotelId:
  *            type: integer
  *          status:
  *            type: string
@@ -183,11 +167,10 @@ router.get('/rooms/:roomId', getRoom);
  *            type: string
  *          roomImage:
  *            type: string
- *            
+ *
  *
  */
 router.put('/rooms/:idroom', updateRoom);
-
 
 /**
  * @swagger
@@ -200,11 +183,9 @@ router.put('/rooms/:idroom', updateRoom);
  *    responses:
  *      '200':
  *        description: Rooms are desplayed succesffuly.
- *      
+ *
 */
-router.get('/rooms',getRooms);
-
-
+router.get('/rooms', getRooms);
 
 /**
  * @swagger
@@ -231,13 +212,13 @@ router.get('/rooms',getRooms);
  *       200:
  *         description: Successfully deleted
  */
-router.delete('/rooms/:roomId',protection,deleteRoom);
+router.delete('/rooms/:roomId', protection, deleteRoom);
 
 /**
  * @swagger
  * /rooms/hotels/{hotelId}/rooms:
  *   get:
- *     summary: For getting all rooms for a particular hotel 
+ *     summary: For getting all rooms for a particular hotel
  *     tags:
  *       - Rooms
  *     description: Returns all rooms
@@ -253,12 +234,7 @@ router.delete('/rooms/:roomId',protection,deleteRoom);
  *         description: All rooms returned
  *       500:
  *         description: Server Error
- */ 
+ */
 router.get('/rooms/hotels/:hotelId/rooms', getHotelRooms);
 
-module.exports = router;
-
-
-
-
-
+export default router;

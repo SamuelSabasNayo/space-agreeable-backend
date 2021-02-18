@@ -10,7 +10,7 @@ export function up(queryInterface, Sequelize) {
     updatedAt: new Date(),
   },
   {
-    idUser: 2,
+    idUser: 5,
     dateStart: '2021-01-20',
     dateEnd: '2021-02-01',
     idRoom: 101,

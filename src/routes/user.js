@@ -1,16 +1,21 @@
-import { Router } from 'express';
+import express from 'express';
 import multer from 'multer';
+import profileRouters from './profile';
+const router = express.Router();
+
+import {signup, signin, getAllUsers, getUserById, updateUserById, deleteUserById, logout, verifyUser} from '../controllers/user';
+
 import SchemaValidator from '../middlewares/SchemaValidator';
+
+const validateRequest = SchemaValidator(true);
+
+
 import checkAuthentication from '../middlewares/check-auth';
+
 import superAdminCheck from '../middlewares/superAdmin.check';
-import {
-  signup, signin, getAllUsers, getUserById, updateUserById, deleteUserById
-} from '../controllers/user';
 
 const { superAdminAuth } = superAdminCheck;
 
-const router = Router();
-const validateRequest = SchemaValidator(true);
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -41,7 +46,7 @@ const upload = multer({
 /**
  * @swagger
  * /user/signup:
- *    post:
+ *     post:
  *      summary: User can signup
  *      tags: [Users]
  *      requestBody:
@@ -61,17 +66,8 @@ const upload = multer({
  *        required:
  *          - firstname
  *          - lastname
- *          - telephone
  *          - email
  *          - password
- *          - role
- *          - gender
- *          - origin
- *          - profession
- *          - age
- *          - identification_type
- *          - identification_number
- *          - user_image
  *        properties:
  *          firstname:
  *            type: string
@@ -83,7 +79,7 @@ const upload = multer({
  *            type: string
  *          password:
  *            type: string
- *          role:
+ *          roleId:
  *            type: string
  *          gender:
  *            type: string
@@ -133,7 +129,21 @@ router.post('/signup', upload.single('user_image'), validateRequest, signup);
  *            type: string
  */
 router.post('/signin', validateRequest, signin);
-
+/**
+ * @swagger
+ * /user:
+ *   get:
+ *     summary: returns all users
+ *     tags: [Users]
+ *     description: Returns all users
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: An array of users
+ *       500:
+ *         description: SERVER ERROR
+ */
 router.get('/', checkAuthentication, getAllUsers);
 
 /**
@@ -224,4 +234,33 @@ router.put('/:id', checkAuthentication, updateUserById);
  */
 router.delete('/:id', superAdminAuth, deleteUserById);
 
+/**
+ * @swagger
+ * /user/verification/{token}:
+ *   get:
+ *     summary: Verify the user email using the token
+ *     tags: [Users]
+ *     description: Verify the user email
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: token
+ *         description: User's Token
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: User successfully verified
+ *       404:
+ *         description: User does not exist
+ */
+router.get('/verification/:token', verifyUser);
+
+
+router.post('/logout', logout);
+
+
+
+router.use('/profile', profileRouters)
 module.exports = router;

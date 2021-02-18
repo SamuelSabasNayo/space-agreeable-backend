@@ -1,7 +1,63 @@
 version: 2.1
 orbs:
   node: circleci/node@3.0.0
+jobs:
+  run_tests:
+    docker:
+      - image:  circleci/node:10
+      - image: circleci/postgres:10
+        environment:
+          POSTGRES_USER: circleci
+          POSTGRES_DB: circleci
+          POSTGRES_PASSWORD:  okayfine
+
+    environment:
+      NODE_ENV: test
+      POSTGRES_USER: circleci
+      POSTGRES_DB: circleci
+      JWT_SECRET: secret
+      CC_TEST_REPORTER_ID: ae5c3cc35a355984de80fff51bb4250fad9a2a468491ce69c28331e3a53a50f1
+
+    steps:
+
+      - run:
+          name: Install ltree extension for Postgres
+          command: |
+            sudo apt-get update
+            sudo apt-get install postgresql-client
+            dockerize -wait tcp://localhost:5432 -timeout 1m
+            psql -U circleci -h localhost -p 5432 -c 'create extension ltree'
+      - checkout
+      - run:
+          name: Install npm dependencies
+          command: npm install --save
+      - run:
+          name: run tests
+          command: 
+            npm run test
+          when: always
+      - run: 
+          name: Run coverage
+          command: npm run coverage
+          when: always
+
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./cc-test-reporter before-build
+          when: always
+      - run:
+          name: Send coverage report to Code Climate
+          command: |
+            ./cc-test-reporter after-build -t lcov
+          when: always
+      - store_artifacts:
+          path: ./coverage/lcov.info
+          prefix: tests
+
 workflows:
-  node-tests:
-    jobs:
-      - node/test
+  builds:
+    jobs: 
+      - run_tests

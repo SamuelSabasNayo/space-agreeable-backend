@@ -25,6 +25,6 @@ export const authManager = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(400).json({ error: 'Internal server error!' });
+    return res.status(400).json({ error: 'Authentication failed!' });
   }
 };
