@@ -10,8 +10,23 @@ export async function up(queryInterface, Sequelize) {
     idUser: {
       type: Sequelize.INTEGER
     },
+    requesterName: {
+      type: Sequelize.STRING
+    },
     idRoom: {
       type: Sequelize.INTEGER
+    },
+    roomType: {
+      type: Sequelize.STRING
+    },
+    hotelId: {
+      type: Sequelize.INTEGER
+    },
+    hotelName: {
+      type: Sequelize.STRING
+    },
+    location: {
+      type: Sequelize.STRING
     },
     dateStart: {
       type: Sequelize.DATE

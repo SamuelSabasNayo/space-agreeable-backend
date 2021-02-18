@@ -4,12 +4,12 @@ import protection from '../middlewares/check-auth';
 import roomController from '../controllers/room';
 
 const router = Router();
-const { createRoom, getRooms, getRoom, deleteRoom, updateRoom, getHotelRooms } = roomController;
+const { createRoom, getRoom, deleteRoom, updateRoom, getHotelRooms } = roomController;
 
 /**
  * @swagger
  *
- * /rooms:
+ * /hotels/rooms:
  *    post:
  *      summary: add a room
  *      tags: [Rooms]
@@ -49,11 +49,11 @@ const { createRoom, getRooms, getRoom, deleteRoom, updateRoom, getHotelRooms } =
  *          roomImage:
  *              type: string
  */
-router.post('/rooms', protection, createRoom);
+router.post('/hotels/rooms', protection, createRoom);
 
 /**
  * @swagger
- * /rooms/{roomId}:
+ * /hotels/{hotelId}/rooms/{roomId}/:
  *   get:
  *     summary: For getting a single room
  *     tags:
@@ -62,8 +62,12 @@ router.post('/rooms', protection, createRoom);
  *     produces:
  *       - application/json
  *     parameters:
+ *       - name: hotelId
+ *         description: Id of a particular hotel)
+ *         in: path
+ *         required: true
  *       - name: roomId
- *         description: Particular Room Object's ID (Automatically assigned by database)
+ *         description: Id of a particular room of a specified hotel
  *         in: path
  *         required: true
  *     responses:
@@ -72,61 +76,20 @@ router.post('/rooms', protection, createRoom);
  *       500:
  *         description: Server Error
  */
-router.get('/rooms/:roomId', getRoom);
+router.get('/hotels/:hotelId/rooms/:roomId', getRoom);
 
 /**
  * @swagger
  *
- * /rooms:
- *    post:
- *      summary: add a room
- *      tags: [rooms]
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/room'
- *      responses:
- *        "201":
- *          description: Article schema
- *
- * components:
- *    schemas:
- *      room:
- *        type: object
- *        required:
- *          - roomType
- *          - description
- *          - roomLabel
- *          - hotelId
- *          - status
- *          - price
- *        properties:
- *          roomType:
- *            type: string
- *          description:
- *              type: string
- *          roomLabel:
- *              type: string
- *          hotelId:
- *              type: string
- *          status:
- *              type: string
- *          price:
- *              type: string
- *
- *
- */
-
-/**
- * @swagger
- *
- * /rooms/{id}:
+ * /hotels/{hotelId}/rooms/{id}:
  *    put:
  *      summary: Room update based on ID
  *      tags: [Rooms]
  *      parameters:
+ *        - name: hotelId
+ *          in: path
+ *          description: Hotel id
+ *          required: true
  *        - name: id
  *          in: path
  *          description: Room ID
@@ -170,26 +133,11 @@ router.get('/rooms/:roomId', getRoom);
  *
  *
  */
-router.put('/rooms/:idroom', updateRoom);
+router.put('/hotels/:hotelId/rooms/:idroom', updateRoom);
 
 /**
  * @swagger
- * /rooms:
- *  get:
- *    tags:
- *    - Rooms
- *    summary: All rooms from database
- *    description: Rooms are desplayed from DB
- *    responses:
- *      '200':
- *        description: Rooms are desplayed succesffuly.
- *
-*/
-router.get('/rooms', getRooms);
-
-/**
- * @swagger
- * /rooms/{roomId}:
+ * /hotels/{hotelId}/rooms/{roomId}:
  *   delete:
  *     summary: Deletes a room based on ID
  *     tags:
@@ -198,8 +146,8 @@ router.get('/rooms', getRooms);
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: roomId
- *         description: room's id
+ *       - name: hotelId
+ *         description: Hotel id
  *         in: path
  *         required: true
  *         type: integer
@@ -212,11 +160,11 @@ router.get('/rooms', getRooms);
  *       200:
  *         description: Successfully deleted
  */
-router.delete('/rooms/:roomId', protection, deleteRoom);
+router.delete('/hotels/:hotelId/rooms/:roomId', protection, deleteRoom);
 
 /**
  * @swagger
- * /rooms/hotels/{hotelId}/rooms:
+ * /hotels/{hotelId}/rooms:
  *   get:
  *     summary: For getting all rooms for a particular hotel
  *     tags:
@@ -235,6 +183,6 @@ router.delete('/rooms/:roomId', protection, deleteRoom);
  *       500:
  *         description: Server Error
  */
-router.get('/rooms/hotels/:hotelId/rooms', getHotelRooms);
+router.get('/hotels/:hotelId/rooms', getHotelRooms);
 
 export default router;

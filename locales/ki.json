@@ -32,7 +32,6 @@
 	"Please login first!": "Nyamuneka banza winjire!",
 	"Unauthorized": "Nta ruhushya",
 	"Only super administrator can perform this action!": "Super administrator niwe ushobora gukora iki gikorwa gusa!",
-	
 	"Facility liked": "Ikigo gikunzwe",
 	"Reaction undone": "reaction yakuweho",
 	"Facility Liked": "Ikigo gikunzwe",
@@ -42,7 +41,6 @@
 	"Facility re-unliked": "Ikigo cyongeye kwangwa",
 	"FacilityId is required": "FacilityId irakenewe",
 	"No facility found": "Nta kigo cyabonetse",
-	
 	"Please login!": "Nyamuneka injira!",
 	"No role assigned!": "Nta ruhare rwahawe!",
 	"Access denied!": "Kwinjira byanze!",
@@ -54,5 +52,30 @@
 	"Request added successfully!": "Ibyifuzo byongeweho neza!",
 	"Request updated successfully!": "Ibyifuzo byavuguruwe neza!",
 	"Internal server error!": "Ikosa rya seriveri imbere!",
-	"Only PENDING request can be edited!": "Icyifuzo cya PENDING cyonyine gishobora guhindurwa!"
+	"Only PENDING request can be edited!": "Icyifuzo cya PENDING cyonyine gishobora guhindurwa!",
+
+	"Facility not found": "Ikigo nticyabonetse",
+	"Feedback sent successfully":"Ibitekerezo byoherejwe neza",
+	"Feedback not found":"Ibisubizo ntibyabonetse",
+	"Feedback sender not found":"Kohereza ibitekerezo ntabwo byabonetse",
+	"Feedback deleted":"Ibisubizo byasibwe",
+	"Feedback marked as seen":"Ibisubizo byemejwe ko byarebywe",
+	"Feedback marked as not seen":"Ibisubizo byemejwe ko bitarebywe",
+	
+	"Please login first":"Mubanze mwinjire muri konte yanyu",
+	"Bad request":"Ubusabe bubi",
+	"Facility Not found!":"Ikigo Nticyabonetse!",
+	"Internal error":"Ikosa ryimbere",
+	"Hotel does not exist!": "Hotel ntabwo ibaho!",
+	"All received notifications": "Imenyesha zose zakiriwe",
+	"No notifications yet": "Nta menyesha",
+	"Room not found": "Icyumba nticyabonetse",
+	"Room of the specified hotel was not found": "Icyumba cya hoteri yagenwe nticyabonetse",
+	"Room updated successfuly": "Icyumba cyavuguruwe neza",
+	"All questions found successfully!": "Ibibazo byose byabonetse neza!",
+	"Question found successfully!": "Ikibazo cyabonetse neza!",
+	"Question added successfully!": "Ikibazo cyongeweho neza!",
+	"Please enter all fields!": "Nyamuneka andika imirima yose!",
+	"Question deleted successfully!": "Ikibazo cyasibwe neza!",
+	"Invalid time!": "Igihe kitemewe!"
 }

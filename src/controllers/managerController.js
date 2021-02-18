@@ -1,12 +1,14 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable no-return-assign */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable require-jsdoc */
 import model from '../database/models';
 import requestService from '../services/requestService';
 import userService from '../services/userService';
+import checkRequestAndNotify from '../helpers/checkType';
 
 const { request, User } = model,
-  { findRequestByRoomId, findRequestById, findRequestByManagerId } = requestService,
+  { findRequestById, findRequestByManagerId } = requestService,
   { findUserById, findUserByManagerId } = userService;
 
 export default class managerController {
@@ -67,21 +69,6 @@ export default class managerController {
     }
   }
 
-  // create a request
-  static async addRequest(req, res) {
-    try {
-      const newIdRoom = req.body.idRoom;
-
-      const allRequests = await findRequestByRoomId(newIdRoom);
-
-      if (allRequests) return res.status(400).json({ message: 'Room is already occupied!' });
-      const savedRequest = await request.create(req.body);
-      return res.status(201).json({ message: res.__('Request added successfully!'), savedRequest });
-    } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error!' });
-    }
-  }
-
   // update a request
   static async updateRequest(req, res) {
     try {
@@ -89,10 +76,17 @@ export default class managerController {
       const existingRequest = await findRequestById(id);
 
       if (!existingRequest) return res.status(404).json({ message: res.__('Request does not exist.') });
-
       await request.update(req.body, { where: { id } });
-
       const updatedRequest = await request.findOne({ where: { id } });
+      const status = updatedRequest.dataValues.requestStatus;
+      const userId = updatedRequest.dataValues.idUser;
+
+      // approved request
+      checkRequestAndNotify(status, 'APPROVED', userId, id, 'Approved request', 'Your request has been approved');
+
+      // rejected request
+      checkRequestAndNotify(status, 'REJECTED', userId, id, 'Rejected request', 'Your request has been rejected');
+
       return res.status(200).json({ message: res.__('Request updated successfully!'), updatedRequest });
     } catch (error) {
       return res.status(500).send({ error: error.message });
@@ -104,21 +98,21 @@ export default class managerController {
     try {
       const { _userId, _managerId } = req.body,
         existingUser = await findUserById(_userId);
-      if (!existingUser) return res.status(404).json({ message: res.__('User does not exist.') });
+      if (!existingUser) res.status(404).json({ message: res.__('User does not exist.') });
       const { roleId } = existingUser;
 
-      if (roleId === 1 || roleId === 2) return res.status(403).json({ message: 'Access denied! to this user!' });
+      if (roleId === 1 || roleId === 2) res.status(403).json({ message: 'Access denied! to this user!' });
       const existingManager = await findUserById(_managerId);
 
-      if (!existingManager) return res.json({ message: res.__('Manager Id does not exist.') });
+      if (!existingManager) res.status(404).json({ message: res.__('Manager Id does not exist.') });
       const savedManagerId = existingManager.roleId;
 
-      if (savedManagerId !== 2) return res.status(403).json({ message: 'Wrong Manager Id!' });
+      if (savedManagerId !== 2) res.status(403).json({ message: 'Wrong Manager Id!' });
       const managerId = _managerId;
 
       await User.update({ managerId }, { where: { id: _userId } });
 
-      return res.status(201).json({ message: res.__('Manager Id is assigned successfully!') });
+      res.status(201).json({ message: res.__('Manager Id is assigned successfully!') });
     } catch (error) {
       return res.status(500).send({ error: 'Internal Server Error!' });
     }

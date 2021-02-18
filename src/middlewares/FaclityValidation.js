@@ -3,6 +3,7 @@ import Joi from 'joi';
 import jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
 import roleService from '../services/role';
+import model from '../database/models';
 
 config();
 
@@ -45,4 +46,16 @@ const _authorizeUser = async (req, res, next) => {
   return res.status(401).json({ message: 'You must be a travel admin' });
 };
 
-module.exports = { _validateFacility, _authorizeUser };
+const _isFacilityValid = async(req, res, next) => {
+  try{
+   let facility =  await model.Facility.findOne({ where: { id: req.params.facilityId } });
+    if(!facility)
+      return res.status(404).json({message: res.__("facility not found!")});
+  }
+  catch(e){
+    return res.status(404).json({message: res.__("facility not found!")});
+  }
+  next();
+}
+
+module.exports = { _validateFacility, _authorizeUser,_isFacilityValid };

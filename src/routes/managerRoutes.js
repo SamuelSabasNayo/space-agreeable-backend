@@ -1,16 +1,16 @@
+/* eslint-disable object-curly-newline */
+/* eslint-disable import/no-cycle */
 import { Router } from 'express';
 import { authManager } from '../middlewares/authManager';
-import { updateRequestValidation } from '../middlewares/requestValidation';
+import { approveRequestValidation, reqStatisticsValidation } from '../middlewares/requestValidation';
+import requestController from '../controllers/requestController';
 import managerController from '../controllers/managerController';
+import reqStatisticsController from '../controllers/reqStatisticsController';
 
 const router = new Router(),
-  {
-    getAllRequests,
-    getOneRequest,
-    addRequest,
-    updateRequest,
-    assignManagerId
-  } = managerController;
+  { createRequest } = requestController,
+  { getAllRequests, getOneRequest, updateRequest, assignManagerId } = managerController,
+  { managerGerGetReqStats } = reqStatisticsController;
 
 /**
  * @swagger
@@ -24,6 +24,25 @@ const router = new Router(),
  *        description: Requests are displayed successfuly.
 */
 router.get('/requests', authManager, getAllRequests);
+
+/**
+ * @swagger
+ * /manager/requests/stats:
+ *  get:
+ *    tags: [Manager]
+ *    summary: Manager can get request statistics in X time.
+ *    description: Manager can get request statistics in X time from database.
+ *    parameters:
+ *      - in: query
+ *        name: time
+ *        schema:
+ *          type: integer
+ *        description: days from today
+ *    responses:
+ *      '200':
+ *        description: Requests found successfully.
+*/
+router.get('/requests/stats', authManager, reqStatisticsValidation, managerGerGetReqStats);
 
 /**
  * @swagger
@@ -58,13 +77,13 @@ router.get('/requests/:id', authManager, getOneRequest);
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/addRequest'
+ *              $ref: '#/components/schemas/createRequest'
  *      responses:
  *        "200":
  *          description: Request added successfully!
  * components:
  *    schemas:
- *      addRequest:
+ *      createRequest:
  *        type: object
  *        required:
  *          - idRoom
@@ -78,7 +97,7 @@ router.get('/requests/:id', authManager, getOneRequest);
  *          dateEnd:
  *            type: string
  */
-router.post('/requests', authManager, addRequest);
+router.post('/requests', authManager, createRequest);
 
 /**
  * @swagger
@@ -114,7 +133,7 @@ router.post('/requests', authManager, addRequest);
  *          requestStatus:
  *            type: string
 */
-router.put('/requests/:id', authManager, updateRequestValidation, updateRequest);
+router.put('/requests/:id', authManager, approveRequestValidation, updateRequest);
 
 /**
  * @swagger

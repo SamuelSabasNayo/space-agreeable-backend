@@ -1,143 +1,99 @@
-
+/* eslint-disable no-underscore-dangle */
 import model from '../database/models';
 
 // creating a room
-
 const createRoom = async (req, res) => {
   try {
     const hotel = await model.hotel.findOne({
-      where : {
+      where: {
         id: req.body.hotelId
       }
-    })
-    if(hotel){
+    });
+    if (hotel) {
       const room = await model.RoomModel.create(req.body);
-
-      hotel.rooms.push(req.body.roomType + "," + " room id: " + room.id)
-      await model.hotel.update({"rooms":hotel.rooms}, {
-        where: { 
-          id:hotel.hotelId
-         }
-      });
       if (room) {
         return res.status(200).json({ room });
       }
-      
-    }else{
-      return res.json({message: res.__("You attempt to assign a room to the hotel which does not exist ! Room not created.")})
+    } else {
+      return res.status(400).json({ message: res.__('You attempt to assign a room to the hotel which does not exist ! Room not created.') });
     }
-    return res.status(200)
-
+    return res.status(200);
   } catch (error) {
-    return res.status(500).json({error: error.message})
+    return res.status(500).json({ message: res.__('Internal server error!') });
   }
 };
 
-//Getting all rooms
-
-const getAllRooms = async (req, res) => {
-  try {
-    const rooms = await model.RoomModel.findAll();
-    return res.status(200).json({ rooms });
-  } catch (error) {
-    return res.status(500).send(error.message);
-  }
-};
-
-//Getting  a particular room by id
-
+// Getting  a particular room by id
 const getRoomById = async (req, res) => {
   try {
-    const {roomId} = req.params;
+    const { roomId, hotelId } = req.params;
     const room = await model.RoomModel.findOne({
-      where: { id: roomId }
-      
-    });
-    if (room) {
-      return res.status(200).json({ room });
-    }
-    return res.status(404).json({meassage: res.__('Room with the specified ID does not exists')});
-  } catch (error) {
+      where: { id: roomId, hotelId }
 
-    return res.status(500).send(error.message);
+    });
+    const hotel = await model.hotel.findOne({ where: { id: hotelId } });
+
+    if (!hotel) res.status(404).json({ message: res.__('Hotel with the specified ID does not exists') });
+
+    if (!room) res.status(404).json({ meassage: res.__('Room with the specified ID does not exists') });
+
+    return res.status(200).json({ room });
+  } catch (error) {
+    return res.status(500).send({ message: res.__('Internal server error!') });
   }
 };
 
-//Updating a particular room by Id
-
+// Updating a particular room by Id
 const updateRoom = async (req, res) => {
   try {
-    const { idroom } = req.params;
-    const [ updated ] = await model.RoomModel.update(req.body, {
-      where: { id: idroom }
+    const { idroom, hotelId } = req.params;
+    const roomToUpdate = await model.RoomModel.findOne({
+      where: { id: idroom, hotelId }
     });
-    if (updated) {
-      const updatedRoom = await model.RoomModel.findOne({ where: { id: idroom } });
-      return res.status(200).json({ room: updatedRoom });
-    }
-    throw new Error('Room not found');
+    if (!roomToUpdate) return res.status(404).json({ message: res.__('Room of the specified hotel was not found') });
+
+    const updatedRoom = await roomToUpdate.update(req.body);
+
+    return res.status(200).json({ message: res.__('Room updated successfuly'), updatedRoom });
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).send({ message: res.__('Internal server error!') });
   }
 };
 
-//Deleting a particular room by id
-
+// Deleting a particular room by id
 const deleteRoom = async (req, res) => {
   try {
-    const { roomId } = req.params;
-    const Room = await model.RoomModel.findOne({
-      where: {
-        id: roomId
-      }
-    });
-     if(Room){
-       const hotelRoom = await model.hotel.findOne({
-         where: {
-           id: Room.hotelId
-         }
-       })
-       if(hotelRoom){
-         const index = hotelRoom.rooms.indexOf(Room.roomType + "," + " room id: " + roomId);
-         if(index > -1){
-          hotelRoom.rooms.splice(index, 1)
-          await model.hotel.update({"rooms":hotelRoom.rooms},{
-            where: {
-              id: hotelRoom.id
-            }
-          })
-         }
-        }
-      }
+    const { roomId, hotelId } = req.params;
 
     const deleted = await model.RoomModel.destroy({
-      where: { id: roomId }
+      where: { id: roomId, hotelId }
     });
     if (deleted) {
-      return res.status(200).json({message: res.__("Room deleted successfully.")});
+      return res.status(200).json({ message: res.__('Room deleted successfully.') });
     }
-    throw new Error("Room not found");
+    return res.status(404).json({ message: res.__('Room of the specified hotel was not found') });
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).send({ message: res.__('Internal server error!') });
   }
 };
 
 const roomByHotel = async (req, res) => {
   try {
-    const {hotelId} = req.params;
+    const { hotelId } = req.params;
     const rooms = await model.RoomModel.findAll({
-      where: { hotelId: hotelId }
+      where: { hotelId }
     });
     if (rooms) {
       return res.status(200).json({ rooms });
     }
-    return res.status(404).send("Hotel Not found");
+    return res.status(404).send({ message: res.__('Hotel Not found') });
   } catch (error) {
-
-    return res.status(500).send(error.message);
+    return res.status(500).send({ message: res.__('Internal server error!') });
   }
 };
 
-//Exporting functions
+// Exporting functions
 
-module.exports = {createRoom,getAllRooms,getRoomById,updateRoom,deleteRoom,roomByHotel} 
+module.exports = {
+  createRoom, getRoomById, updateRoom, deleteRoom, roomByHotel
+};

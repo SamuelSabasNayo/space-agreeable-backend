@@ -1,205 +1,153 @@
-process.env.NODE_ENV = 'test';
-
+/* eslint-disable camelcase */
+import chai from 'chai';
+import chaiHttp from 'chai-http';
 import model from '../database/models';
-import app from "../app";
-import chai from "chai";
-import chaiHttp from "chai-http";
+import { app } from '../app';
+
+process.env.NODE_ENV = 'test';
 const { expect } = chai;
 chai.use(chaiHttp);
-// create a room
 
-describe('post/rooms', () => {
-  it('it should  POST a room', async () => {
-
-      const token = " ";
-
-      const valid_input = {
-          "email": "mukuru@gmail.com",
-          "password": "mukuru@#"
-      }
-        chai.request(app)
-        .post('/user/signin')
-        .send(valid_input)
-        .then(async (login_response) => {
-            token = 'Bearer ' + login_response.body.token;
-            const hotel = await model.hotel.findOne({
-              where : {
-                id: req.body.hotelId
-              }
-            });
-            if(hotel){
-              const room = await model.RoomModel.create(req.body);
-              hotel.rooms.push(req.body.roomType + "," + " room id: " + room.id)
-              await model.hotel.update({"rooms":hotel.rooms}, {
-                where: { 
-                  id:hotel.hotelId
-                 }
-              });
-              if(room){
-                chai.request(app)
-                .post('/rooms')
-                .set('Authorization', token)
-                .send({
-                  hotelId: 1,
-                  description: "Room for underGround",
-                  roomType: "First class",
-                  roomLabel: "label 001",
-                  status: "double",
-                })
-                .end((err, res) => {
-                  expect(res.status).to.equal(200);
-                })
-              }
-            }
-
-        })
+let token;
+describe('Rooms', () => {
+  before(async () => {
+    const res = await chai.request(app)
+      .post('/user/signup')
+      .send({
+        firstname: 'Space',
+        lastname: 'User2',
+        email: 'testuser@gmail.com',
+        password: 'Test123.',
+        gender: 'Female',
+        origin: 'Angola',
+        age: 2021,
+        identification_type: 'Passport',
+        identification_number: 'PC 321211'
+      });
+    token = res.body.token;
   });
-});
-
-describe('post/rooms', () => {
-  it('it should Not POST a room', () => {
-
-      const token = " ";
-
-      const valid_input = {
-          "email": "furebo@gmail.com",
-          "password": "furebo@#"
-      }
+  describe('post/rooms', () => {
+    it('it should  POST a room', async () => {
+      const hotelId = 1;
+      const hotel = await model.hotel.findOne({
+        where: {
+          id: hotelId
+        }
+      });
+      if (hotel) {
         chai.request(app)
-        .post('/user/signin')
-        .send(valid_input)
-        .then((login_response)=>{
-            token = 'Bearer ' + login_response.body.token;
-            chai.request(app)
-            .post('/rooms')
-            .set('Authorization', token)
-            .send({
-              hotelId: "1",
-              description: "Room for underGround",
-              roomType: "First class",
-              roomLabel: "label 001",
-              status: "double",
-            })
-            .end((err, res) => {
-              expect(res.status).to.equal(500);
-            })
-        })
-  });
-});
-
-describe("put/rooms/:idroom",()=>{
-  
-  it("should update an existing  room ",()=>{
-
-     const token = " ";
-
-      const valid_input = {
-        "email": "mukuru@gmail.com",
-        "password": "mukuru@#"
-      }
-      chai.request(app)
-        .post('/user/signin')
-        .send(valid_input)
-        .then((login_response)=>{
-
-          const idroom = 1;
-
-          token = 'Bearer ' + login_response.body.token; 
-          chai.request(app)
-          .put(`/rooms/${idroom}`)
+          .post('/hotels/rooms')
           .set('Authorization', token)
           .send({
-            description: "Room for VIP"
+            hotelId: 1,
+            description: 'Room for underGround',
+            roomType: 'First class',
+            roomLabel: 'label 001',
+            status: 'double',
           })
           .end((err, res) => {
             expect(res.status).to.equal(200);
           });
-        })
-      })
-  }) 
+      }
+    });
+  });
 
-  describe("put/rooms/:idroom",()=>{
-  
-    it("should Not update an existing  room ",()=>{
-  
-       const token = " ";
-  
-        const valid_input = {
-          "email": "mukuru@gmail.com",
-          "password": "mukuru@#"
-        }
-        chai.request(app)
-          .post('/user/signin')
-          .send(valid_input)
-          .then((login_response)=>{
-  
-            const idroom = "0";
-  
-            token = 'Bearer ' + login_response.body.token; 
-            chai.request(app)
-            .put(`/rooms/${idroom}`)
-            .set('Authorization', token)
-            .send({
-              description: "Room for VIP"
-            })
-            .end((err, res) => {
-              expect(res.status).to.equal(500);
-            });
-          })
+  describe('post/rooms', () => {
+    it('it should Not POST a room', () => {
+      chai.request(app)
+        .post('/hotels/rooms')
+        .set('Authorization', token)
+        .send({
+          hotelId: '20',
+          description: 'Room for underGround',
+          roomType: 'First class',
+          roomLabel: 'label 001',
+          status: 'double',
         })
-    }) 
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+        });
+    });
+  });
 
-describe("Get All Rooms", () => {
-     it("should return an array of the all Rooms", (done) => {
+  describe('put/hotels/:hotelId/rooms/:idroom', () => {
+    it('should update an existing  room ', () => {
+      const idroom = 1;
+      const hotelId = 1;
+      chai.request(app)
+        .put(`/hotels/${hotelId}/rooms/${idroom}`)
+        .set('Authorization', token)
+        .send({
+          description: 'Room for VIP'
+        })
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+        });
+    });
+  });
+
+  describe('Put /hotels/:hotelId/rooms/:idroom', () => {
+    it('should return 404 if room of specified hotel not found ', () => {
+      const idroom = 0;
+      const hotelId = 10;
+      chai.request(app)
+        .put(`/hotels/${hotelId}/rooms/${idroom}`)
+        .set('Authorization', token)
+        .send({
+          description: 'Room for VIP'
+        })
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+        });
+    });
+  });
+  describe('Get All Rooms of a Particular hotel', () => {
+    it('should return an array of the all Rooms of a hotel', (done) => {
+      const hotelId = 6;
       chai
         .request(app)
-        .get("/rooms")
+        .get(`/hotels/${hotelId}/rooms`)
         .end((err, res) => {
           if (err) done(err);
-          expect(res).to.have.status(200);    
+          expect(res).to.have.status(200);
           done();
         });
     });
   });
-  describe("Get All Rooms of a Particular hotel", () => {
-    it("should return an array of the all Rooms of a hotel", (done) => {
-      const hotelId = 6;
-     chai
-       .request(app)
-       .get(`/rooms/hotels/${hotelId}/rooms`)
-       .end((err, res) => {
-         if (err) done(err);
-         expect(res).to.have.status(200);    
-         done();
-       });
-   });
- });
-describe(' Returning selected room', () => {
-    it('should return selected room', async() => {
-
-      const roomId = 6
-      const room =  await model.RoomModel.findOne({
-        where: { id: roomId } 
-      });
-      if(room){
-        chai
+  describe(' Returning selected room of specific hotel', () => {
+    it('should return selected room', async () => {
+      const roomId = 4;
+      const hotelId = 1;
+      chai
         .request(app)
-        .get(`/rooms/${roomId}`)
-        //.set('authorization', token)
+        .get(`/hotels/${hotelId}/rooms/${roomId}`)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          //done();
         });
-      }else{
-        chai
-        .request(app)
-        .get(`/rooms/${roomId}`)
-        //.set('authorization', token)
-        .end((err, res) => {
-          expect(res.status).to.equal(404);
-          //done();
-        });
-      }
-
     });
   });
+  describe(' Delete selected room of a specified hotel', () => {
+    it('should delete selected room of a specified hotel', async () => {
+      const roomId = 4;
+      const hotelId = 1;
+      chai
+        .request(app)
+        .delete(`/hotels/${hotelId}/rooms/${roomId}`)
+        .set('Authorization', token)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+        });
+    });
+    it('should return 404 if room of a specified hotel does not exist', async () => {
+      const roomId = 6;
+      const hotelId = 6;
+      chai
+        .request(app)
+        .delete(`/hotels/${hotelId}/rooms/${roomId}`)
+        .set('Authorization', token)
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+        });
+    });
+  });
+});

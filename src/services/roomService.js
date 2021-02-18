@@ -1,9 +1,12 @@
-/* eslint-disable import/prefer-default-export */
+/* eslint-disable require-jsdoc */
 import models from '../database/models';
 
 const { RoomModel } = models;
 
-export const findRooms = async (idRoom) => {
-  const room = await RoomModel.findOne({ where: idRoom });
-  if (room) return room;
-};
+export default class roomService {
+  static async findRooms(id) {
+    const existingRoom = await RoomModel.findOne({ where: id });
+
+    if (existingRoom) return existingRoom;
+  }
+}

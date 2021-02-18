@@ -1,8 +1,8 @@
-/* eslint-disable prefer-const */
-/* eslint-disable object-curly-newline */
+/* eslint-disable import/no-named-as-default */
 import { use, request, expect } from 'chai';
 import chaiHttp from 'chai-http';
-import app from '../app';
+import { app } from '../app';
+import model from '../database/models';
 
 use(chaiHttp);
 
@@ -11,7 +11,8 @@ const { ADMIN_PASSWORD } = process.env;
 let tokenAdmin = '',
   tokenManager = '',
   tokenUser = '',
-  userId = '';
+  userId = '',
+  time;
 
 describe('MANAGER Endpoints', () => {
   describe('Signin Super Admin', () => {
@@ -68,7 +69,6 @@ describe('MANAGER Endpoints', () => {
                   email: 'backendmanager@bn.com',
                   password: `B${ADMIN_PASSWORD}`
                 });
-
               tokenManager = res.body.token;
               expect(res).to.have.status(200);
             });
@@ -88,7 +88,6 @@ describe('MANAGER Endpoints', () => {
                     identification_type: 'Passport',
                     identification_number: 'PC 321211'
                   });
-
                 tokenUser = res.body.token;
                 userId = res.body.user_details.id;
               });
@@ -118,7 +117,6 @@ describe('MANAGER Endpoints', () => {
                       _userId: userId,
                       _managerId: 2
                     });
-
                   expect(res).to.have.status(201);
                 });
 
@@ -130,16 +128,18 @@ describe('MANAGER Endpoints', () => {
                         email: 'user1@bn.com',
                         password: 'Test123.'
                       });
-
                     tokenUser = res.body.token;
                   });
+
                   describe('User creates a hotel', () => {
+                    let hotelId;
+                    let hotelName;
                     before(async () => {
                       const res = await request(app)
                         .post('/hotels')
                         .set('authorization', tokenUser)
                         .send({
-                          hotelname: 'Marriott Hotel',
+                          hotelname: 'Marriott',
                           pricerange: '$320',
                           location: 'Kigali',
                           ranking: '5 star',
@@ -147,21 +147,22 @@ describe('MANAGER Endpoints', () => {
                           wifi: 'Yes',
                           swimmingpool: 'Yes',
                           breakfast: 'Yes',
-                          rooms: ['Double rooms', 'Single rooms', 'complex rooms'],
                           images: ['www.unsplash.com/umubavu', 'www.gettyimages/umubavuhotel'],
                           hotelemail: 'infos@marriott.com'
                         });
-
                       expect(res).to.have.status(201);
+                      const hotel = await model.hotel.findAll();
+                      hotelId = hotel[0].dataValues.id;
+                      hotelName = hotel[0].dataValues.hotelname;
                     });
 
                     describe('User creates a room', () => {
-                      before(async () => {
+                      it('Users create a room', async () => {
                         const res = await request(app)
-                          .post('/rooms')
+                          .post('/hotels/rooms')
                           .set('authorization', tokenUser)
                           .send({
-                            hotelId: 2,
+                            hotelId,
                             description: 'Room for VIP',
                             roomType: 'first class',
                             roomLabel: 'label 001',
@@ -171,19 +172,18 @@ describe('MANAGER Endpoints', () => {
                             createdAt: new Date(),
                             updatedAt: new Date(),
                           });
-
                         expect(res).to.have.status(200);
                       });
 
                       it('User creates second room', async () => {
                         const res = await request(app)
-                          .post('/rooms')
+                          .post('/hotels/rooms')
                           .set('authorization', tokenUser)
                           .send({
-                            hotelId: 2,
-                            description: 'Room for VIP',
-                            roomType: 'first class',
-                            roomLabel: 'label 001',
+                            hotelId,
+                            description: 'Room for VVIP',
+                            roomType: 'Double Room',
+                            roomLabel: 'label 002',
                             status: 'double',
                             price: '200$-300$',
                             roomImage: 'https://www.images.com/image.png',
@@ -200,11 +200,11 @@ describe('MANAGER Endpoints', () => {
                             .post('/requests')
                             .set('authorization', tokenUser)
                             .send({
+                              hotelName,
                               idRoom: 2,
                               dateStart: '2021-01-29',
                               dateEnd: '2021-01-30'
                             });
-                          // console.log(res.body);
                           expect(res).to.have.status(201);
                         });
 
@@ -246,35 +246,55 @@ describe('MANAGER Endpoints', () => {
                           });
                         });
 
+                        describe('GET /manager/requests/stats', () => {
+                          it('Manager should get requests statistics', async () => {
+                            time = 30;
+                            const res = await request(app)
+                              .get(`/manager/requests/stats?time=${time}`)
+                              .set('authorization', tokenManager);
+
+                            expect(res).to.have.status(200);
+                          });
+
+                          it('Manager should not get requests statistics', async () => {
+                            time = -30;
+                            const res = await request(app)
+                              .get(`/manager/requests/stats?time=${time}`)
+                              .set('authorization', tokenManager);
+
+                            expect(res).to.have.status(403);
+                          });
+                        });
+
                         describe('POST /manager/requests', () => {
                           it('Manager should add a request', async () => {
                             const res = await request(app)
                               .post('/manager/requests')
                               .set('authorization', tokenManager)
                               .send({
-                                idRoom: 500,
+                                hotelName,
+                                idRoom: 2,
                                 dateStart: '2021-01-25',
                                 dateEnd: '2021-01-30'
                               });
-
                             expect(res).to.have.status(201);
                             expect(res.body).to.have.property('message');
-                            expect(res.body.message).to.match(/Request added successfully!/i);
+                            expect(res.body.message).to.match(/Request created successfully!/i);
                           });
 
-                          it('Manager should get "Access denied!" message', async () => {
+                          it('Manager should get "Room id does not exist!" message', async () => {
                             const res = await request(app)
                               .post('/manager/requests')
-                              .set('authorization', tokenAdmin)
+                              .set('authorization', tokenManager)
                               .send({
+                                hotelName,
                                 idRoom: 500,
                                 dateStart: '2021-01-25',
                                 dateEnd: '2021-01-30'
                               });
-
-                            expect(res).to.have.status(400);
+                            expect(res).to.have.status(403);
                             expect(res.body).to.have.property('message');
-                            expect(res.body.message).to.match(/Room is already occupied!/i);
+                            expect(res.body.message).to.match(/Room id does not exist!/i);
                           });
                         });
 
@@ -311,17 +331,94 @@ describe('MANAGER Endpoints', () => {
                         });
 
                         describe('PUT/:id /manager/requests/:id', () => {
-                          it('Manager should update a request', async () => {
+                          it('Manager should reject a  request', async () => {
                             const res = await request(app)
                               .put('/manager/requests/1')
                               .set('authorization', tokenManager)
                               .send({
-                                requestStatus: 'REJECTED',
-                                idRoom: 500,
-                                dateStart: '2021-01-25',
-                                dateEnd: '2021-01-30'
+                                requestStatus: 'REJECTED'
+                              });
+                            expect(res).to.have.status(200);
+                            expect(res.body).to.have.property('message');
+                            expect(res.body.message).to.match(/Request updated successfully!/i);
+                          });
+
+                          it('Manager should get "Request does not exist" message', async () => {
+                            const res = await request(app)
+                              .put('/manager/requests/0')
+                              .set('authorization', tokenManager)
+                              .send({
+                                requestStatus: 'REJECTED'
+                              });
+                            expect(res).to.have.status(404);
+                            expect(res.body).to.have.property('message');
+                            expect(res.body.message).to.match(/Request does not exist./i);
+                          });
+                        });
+
+                        describe('POST/ /manager/requests/', () => {
+                          it('Manager should assign managerId', async () => {
+                            const res = await request(app)
+                              .post('/manager/assign')
+                              .set('authorization', tokenManager)
+                              .send({
+                                _userId: userId,
+                                _managerId: 2
                               });
 
+                            expect(res).to.have.status(201);
+                          });
+
+                          it('Manager should get "Wrong Manager Id" message', async () => {
+                            const res = await request(app)
+                              .post('/manager/assign')
+                              .set('authorization', tokenManager)
+                              .send({
+                                _userId: userId,
+                                _managerId: 1
+                              });
+                            expect(res).to.have.status(403);
+                          });
+
+                          it('Manager should get "Manager Id does not exist" message', async () => {
+                            const res = await request(app)
+                              .post('/manager/assign')
+                              .set('authorization', tokenManager)
+                              .send({
+                                _userId: userId,
+                                _managerId: 0
+                              });
+                            expect(res).to.have.status(404);
+                          });
+
+                          it('Manager should get "Access denied! to this user" message', async () => {
+                            const res = await request(app)
+                              .post('/manager/assign')
+                              .set('authorization', tokenManager)
+                              .send({
+                                _userId: 3,
+                                _managerId: 2
+                              });
+                            expect(res).to.have.status(403);
+                          });
+
+                          it('Manager should get "User does not exist" message', async () => {
+                            const res = await request(app)
+                              .post('/manager/assign')
+                              .set('authorization', tokenManager)
+                              .send({
+                                _userId: 0,
+                                _managerId: 2
+                              });
+                            expect(res).to.have.status(404);
+                          });
+                          it('Manager should approve a request', async () => {
+                            const res = await request(app)
+                              .put('/manager/requests/1')
+                              .set('authorization', tokenManager)
+                              .send({
+                                requestStatus: 'APPROVED'
+                              });
                             expect(res).to.have.status(200);
                             expect(res.body).to.have.property('message');
                             expect(res.body.message).to.match(/Request updated successfully!/i);

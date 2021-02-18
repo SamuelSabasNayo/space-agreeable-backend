@@ -37,9 +37,6 @@ export async function up(queryInterface, Sequelize) {
     breakfast: {
       type: Sequelize.STRING
     },
-    rooms: {
-      type: Sequelize.ARRAY(Sequelize.STRING)
-    },
     images: {
       type: Sequelize.ARRAY(Sequelize.STRING)
     },
@@ -56,6 +53,7 @@ export async function up(queryInterface, Sequelize) {
     }
   });
 }
+// eslint-disable-next-line no-unused-vars
 export async function down(queryInterface, Sequelize) {
   await queryInterface.dropTable('hotels');
 }

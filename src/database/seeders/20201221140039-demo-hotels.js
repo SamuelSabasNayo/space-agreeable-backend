@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('hotels', [{
@@ -9,7 +10,6 @@ module.exports = {
       wifi: 'Yes',
       swimmingpool: 'no',
       breakfast: 'Yes',
-      rooms: ['Double rooms', 'Single rooms', 'complex rooms'],
       images: ['www.unsplash.com/umubavu', 'www.gettyimages/umubavuhotel'],
       hotelemail: 'five@yahoo.com',
       updatedAt: '2020-12-21T13:53:26.104Z',

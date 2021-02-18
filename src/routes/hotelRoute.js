@@ -1,6 +1,7 @@
+/* eslint-disable import/named */
 import { Router } from 'express';
 import {
-  getAllHotels, createHotel, deleteHotel, getHotel, getHotelRooms, updateHotel
+  getAllHotels, createHotel, deleteHotel, getHotel, updateHotel
 } from '../controllers/hotelController';
 import protection from '../middlewares/check-auth';
 import { createHotelValidation, updateHotelValidation } from '../middlewares/hotelValidation';
@@ -89,59 +90,22 @@ router.get('/', getAllHotels);
  * @swagger
  * /hotels/{id}:
  *    delete:
- *      tags: [Hotels]
- *      summary: Authenticated user can delete a hotel
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/requests'
- *      responses:
- *        "200":
- *          description: A hotel schema
- *
- * components:
- *    schemas:
- *      hotel:
- *        type: object
- *        required:
- *          - hotelname
- *          - pricerange
- *          - location
- *          - ranking
- *          - parking
- *          - wifi
- *          - swimmingpool
- *          - breakfast
- *          - rooms
- *          - images
- *          - hotelemail
- *        properties:
- *          hotelName:
- *            type: string
- *          pricerange:
- *              type: string
- *          location:
- *              type: string
- *          ranking:
- *              type: string
- *          parking:
- *              type: string
- *          wifi:
- *              type: string
- *          swimmingpool:
- *              type: string
- *          breakfast:
- *              type: string
- *          rooms:
- *              type: string
- *          images:
- *              type: string
- *          hotelemail:
- *              type: string
+ *     summary: For deleting single hotel
+ *     tags: [Hotels]
+ *     description: Delete selected hotel
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: Particular hotel Object's ID (Automatically assigned by database)
+ *         in: path
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: A single hotel
+ *       500:
+ *         description: Server Error
  */
-
 router.delete('/:id', protection, deleteHotel);
 
 /**
@@ -166,7 +130,7 @@ router.delete('/:id', protection, deleteHotel);
  *         description: Server Error
  */
 
-router.get('/:id', protection, getHotel);
+router.get('/:id', getHotel);
 
 /**
  * @swagger
@@ -179,7 +143,7 @@ router.get('/:id', protection, getHotel);
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/schemas/requests'
+ *              $ref: '#/components/schemas/hotel'
  *      responses:
  *        "200":
  *          description: A hotel schema

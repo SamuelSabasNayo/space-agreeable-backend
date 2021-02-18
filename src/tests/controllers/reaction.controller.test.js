@@ -1,6 +1,6 @@
 import { use, expect, request } from 'chai';
 import http from 'chai-http';
-import app from '../../app';
+import { app } from '../../app';
 import models from '../../database/models';
 
 const { Facility, Reaction } = models;

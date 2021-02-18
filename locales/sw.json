@@ -32,7 +32,6 @@
 	"Please login first!": "Tafadhali ingia kwanza!",
 	"Unauthorized": "Isiyoidhinishwa",
 	"Only super administrator can perform this action!": "Msimamizi mkuu tu ndiye anayeweza kufanya kitendo hiki!",
-	
 	"Facility liked": "Kituo kilipendwa",
 	"Reaction undone": "Majibu yamefutwa",
 	"Facility Liked": "Kituo Unapenda",
@@ -42,12 +41,10 @@
 	"Facility re-unliked": "Kituo hakipendwi",
 	"FacilityId is required": "KituoId kinahitajika",
 	"No facility found": "Hakuna kituo kilichopatikana",
-	
 	"Access denied. You can only update your profile":"Ufikiaji umekataliwa. Unaweza tu kusasisha wasifu wako",
 	"User not found":"Mtumiaji hajapatikana",
 	"Profile not found":"Profaili haipatikani",
 	"Profile saved successfully":"Wasifu umehifadhiwa kwa mafanikio",
-	
 	"Please login!": "Tafadhali ingia!",
 	"No role assigned!": "Hakuna jukumu lililopewa!",
 	"Access denied!": "Ufikiaji umekataliwa!",
@@ -59,5 +56,30 @@
 	"Request added successfully!": "Ombi limeongezwa kwa mafanikio!",
 	"Request updated successfully!": "Ombi limesasishwa kwa mafanikio!",
 	"Internal server error!": "Hitilafu ya seva ya ndani!",
-	"Only PENDING request can be edited!": "Ombi linalosubiri tu linaweza kuhaririwa!"
+	"Only PENDING request can be edited!": "Ombi linalosubiri tu linaweza kuhaririwa!",
+
+	"Facility not found": "Kituo hakipatikani",
+	"Feedback sent successfully":"Maoni yametumwa kwa mafanikio",
+	"Feedback not found":"Maoni hayapatikani",
+	"Feedback sender not found":"Mtumaji maoni hajapatikana",
+	"Feedback deleted":"Maoni yamefutwa",
+	"Feedback marked as seen":"Maoni yametiwa alama kama inavyoonekana",
+	"Feedback marked as not seen":"Maoni yametiwa alama kuwa hayaonekani",
+
+	"Bad request":"Ombi baya",
+	"Please login first":"Tafadhali ingia kwanza",
+	"Facility Not found!":"Kituo Haikupatikana!",
+	"Internal error":"Hitilafu ya ndani",
+	"Hotel does not exist!": "Hoteli haipo!",
+	"All received notifications": "Arifa zote zilizopokelewa",
+	"No notifications yet": "Hakuna arifa bado",
+	"Room not found": "Chumba hakijapatikana",
+	"Room of the specified hotel was not found": "Chumba cha hoteli iliyoainishwa hakikupatikana",
+	"Room updated successfuly": "Chumba kimesasishwa mafanikio",
+	"All questions found successfully!": "Maswali yote yamefanikiwa!",
+	"Question found successfully!": "Swali limepatikana kwa mafanikio!",
+	"Question added successfully!": "Swali limeongezwa kwa mafanikio!",
+	"Please enter all fields!": "Tafadhali ingiza sehemu zote!",
+	"Question deleted successfully!": "Swali limefutwa kwa mafanikio!",
+	"Invalid time!": "Wakati batili!"
 }

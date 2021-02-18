@@ -101,7 +101,6 @@ describe('/GET profile', () => {
                done(err);
               }
               expect(res).to.not.be.null;
-              
               expect(res.body.lastname).to.haveOwnProperty('value');
               expect(res.body.origin).to.haveOwnProperty('value');
               expect(res.body.identification_type).to.haveOwnProperty('value');

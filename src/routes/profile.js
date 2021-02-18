@@ -66,13 +66,6 @@ const router = express.Router();
  *                   type: string
  *                save:
  *                    type: boolean
- *          profession:
- *            type: object
- *            properties:
- *                value: 
- *                   type: string
- *                save:
- *                    type: boolean
  *          age:
  *            type: object
  *            properties:

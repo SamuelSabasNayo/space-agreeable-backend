@@ -33,6 +33,13 @@ export default class requestService {
     if (userRequestIds) return userRequestIds;
   }
 
+  static async mapRoomIds(idUser) {
+    const existingRequests = await findAllRequestsByUserId(idUser),
+      roomIds = existingRequests.map((item) => item.idRoom);
+
+    if (roomIds) return roomIds;
+  }
+
   static async requestLength(array) {
     const value = array.length;
     return value;

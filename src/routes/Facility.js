@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
   getFacilities, addFacility, updateFacility, deleteFacility, getSingleFacility
 } from '../controllers/facilityController';
+import facilityFeedbackRoutes from './facilitiesFeedbackRoute';
 import { _validateFacility, _authorizeUser } from '../middlewares/FaclityValidation';
 
 const router = Router();
@@ -223,5 +224,7 @@ router.get('/:id', getSingleFacility);
  *       500:
  *         description: Server Error
  */
+
+router.use(facilityFeedbackRoutes);
 
 export default router;

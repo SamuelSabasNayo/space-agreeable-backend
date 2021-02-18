@@ -122,6 +122,64 @@ describe('facility endpoint', () => {
                   done();
                 });
             });
+            it('should not add new facility', (done) => {
+              const data = {
+                locations: 'test name ',
+                addresz: "test address ev 32'st",
+                images: 'testImg.jpg',
+                roomNumber: '43',
+                roomDetails: '{sdlksldks:sdsds,sdsdsds:sdksjdskdj}'
+              };
+              chai
+                .request(app)
+                .post('/facility')
+                .set('authorization', travelAdminToken)
+                .send(data)
+                .end((err, response) => {
+                  expect(response).to.have.status(422);
+                  expect(response.body).to.be.an('object');
+                  done();
+                });
+            });
+            it('should not add new facility', (done) => {
+              const data = {
+                location: 'test name ',
+                address: "test address ev 32'st",
+                images: 'testImg.jpg',
+                roomNumber: '43',
+                roomDetails: '{sdlksldks:sdsds,sdsdsds:sdksjdskdj}'
+              };
+              const tkn = travelAdminToken.split(' ')[0];
+              chai
+                .request(app)
+                .post('/facility')
+                .set('authorization', tkn)
+                .send(data)
+                .end((err, response) => {
+                  expect(response).to.have.status(401);
+                  expect(response.body).to.be.an('object');
+                  done();
+                });
+            });
+            it('should not add new facility', (done) => {
+              const data = {
+                location: 'test name ',
+                address: "test address ev 32'st",
+                images: 'testImg.jpg',
+                roomNumber: '43',
+                roomDetails: '{sdlksldks:sdsds,sdsdsds:sdksjdskdj}'
+              };
+              chai
+                .request(app)
+                .post('/facility')
+                .set('authorization', token)
+                .send(data)
+                .end((err, response) => {
+                  expect(response).to.have.status(401);
+                  expect(response.body).to.be.an('object');
+                  done();
+                });
+            });
 
             it('should not add a facility', (done) => {
               const data = {
@@ -183,6 +241,24 @@ describe('facility endpoint', () => {
               chai
                 .request(app)
                 .put('/facility/120')
+                .set('authorization', travelAdminToken)
+                .send(data)
+                .end((err, response) => {
+                  expect(response).to.have.status(404);
+                  done();
+                });
+            });
+            it('should not update facility', (done) => {
+              const data = {
+                location: 'test updated name ',
+                address: "test address ev updated 32'st",
+                images: 'testImg.jpg',
+                roomNumber: '43',
+                roomDetails: '{sdlksldks:sdsds,sdsdsds:sdksjdskdj}'
+              };
+              chai
+                .request(app)
+                .put('/facility/1kl')
                 .set('authorization', travelAdminToken)
                 .send(data)
                 .end((err, response) => {

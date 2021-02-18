@@ -1,29 +1,31 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable object-curly-newline */
 /* eslint-disable max-len */
 /* eslint-disable require-jsdoc */
 /* eslint-disable no-underscore-dangle */
 import model from '../database/models';
-import { findRooms } from '../services/roomService';
+import hotelService from '../services/hotelService';
+import roomService from '../services/roomService';
 import requestService from '../services/requestService';
 import requestHelper from '../utils/requestHelper';
+import checkRequestAndNotify from '../helpers/checkType';
 
 const { request } = model,
+  { findHotelByName } = hotelService,
+  { findRooms } = roomService,
   { findAllRequestsByUserId } = requestHelper,
-  { findRequestById, findRequestByRoomId, mapUserRequestIds, requestLength } = requestService;
+  { findRequestById, mapUserRequestIds, mapRoomIds, requestLength } = requestService;
 
 export default class requestController {
 // getting all requests
   static async getAllRequests(req, res) {
-    let _response = '';
     const userId = req.userData.id,
       existingRequests = await findAllRequestsByUserId(userId),
       existingRequestLength = await requestLength(existingRequests);
 
-    if (existingRequestLength === 0) _response = res.status(404).json({ message: res.__('Request does not exist!') });
+    if (existingRequestLength === 0) return res.status(404).json({ message: res.__('Request does not exist!') });
 
-    _response = res.status(200).json({ message: res.__('Requests found successfully!'), existingRequests });
-
-    return _response;
+    res.status(200).json({ message: res.__('Requests found successfully!'), existingRequests });
   }
 
   // get one request
@@ -53,31 +55,39 @@ export default class requestController {
   // creating a request
   static async createRequest(req, res) {
     try {
-      let _response = '';
-      const newIdRoom = req.body.idRoom,
-        allRequests = await findRequestByRoomId(newIdRoom);
+      const { idRoom, hotelName, dateStart, dateEnd } = req.body,
+        { id, firstname, lastname } = req.userData,
+        hotel = await findHotelByName(hotelName);
 
-      if (allRequests) _response = res.status(403).json({ message: res.__('Room id is already occupied!') });
-      const {
-          idRoom, dateStart, dateEnd
-        } = req.body,
-        userId = req.userData.id;
+      if (!hotel) res.status(403).json({ message: res.__('Hotel does not exist!') });
+      const room = await findRooms(idRoom);
 
-      const existingRoom = await findRooms(idRoom);
+      if (!room) res.status(403).json({ message: res.__('Room id does not exist!') });
+      const roomStatus = room.status,
+        roomIds = await mapRoomIds(id);
 
-      if (!existingRoom) _response = res.status(400).json({ message: res.__('Room id does not exist') });
+      const oneRequest = await roomIds.find((elem) => elem === idRoom);
 
-      const newRequest = {
-        idUser: userId,
+      if (oneRequest || roomStatus === 'OCCUPIED') return res.status(400).json({ message: res.__('Room Id is already occupied!') });
+
+      const savedRequest = await request.create({
+        idUser: id,
+        requesterName: `${firstname} ${lastname}`,
         idRoom,
+        roomType: room.roomType,
+        hotelId: hotel.id,
+        hotelName,
+        location: hotel.location,
         dateStart,
         dateEnd
-      };
-      const savedRequest = await request.create(newRequest);
+      });
+      const userId = id;
+      const status = savedRequest.dataValues.requestStatus;
+      const reqId = savedRequest.dataValues.id;
 
-      _response = res.status(201).json({ message: res.__('Request created successfully!'), savedRequest });
+      checkRequestAndNotify(status, 'PENDING', userId, reqId, 'Request created', 'Your request has been created');
 
-      return _response;
+      res.status(201).json({ message: res.__('Request created successfully!'), savedRequest });
     } catch (error) {
       return res.status(500).json({ error: res.__('Internal server error!') });
     }
@@ -86,27 +96,25 @@ export default class requestController {
   // updating a request
   static async updateRequest(req, res) {
     try {
-      let _response = '';
       const userId = req.userData.id,
         userRequestIds = await mapUserRequestIds(userId);
 
-      if (!userRequestIds) _response = res.status(404).json({ message: 'No request found!' });
+      if (!userRequestIds) res.status(404).json({ message: 'No request found!' });
       const requestId = req.params.id,
         overallRequest = await findRequestById(requestId);
 
-      if (!overallRequest) _response = res.status(404).json({ message: res.__('Request Id does not exist!') });
+      if (!overallRequest) res.status(404).json({ message: res.__('Request Id does not exist!') });
       const matchingRequestId = userRequestIds.find((elem) => elem === overallRequest.id);
 
-      if (!matchingRequestId) _response = res.status(404).json({ message: res.__('Request does not exist!') });
+      if (!matchingRequestId) res.status(404).json({ message: res.__('Request does not exist!') });
       const { requestStatus } = overallRequest;
 
-      if (requestStatus !== 'PENDING') _response = res.status(403).json({ message: res.__('Only PENDING request can be edited!') });
+      if (requestStatus !== 'PENDING') return res.status(403).json({ message: res.__('Only PENDING request can be edited!') });
       await request.update(req.body, { where: { id: requestId } });
 
       const updatedRequest = await findRequestById(requestId);
-      _response = res.status(200).json({ message: res.__('Requested updated successfully'), updatedRequest });
 
-      return _response;
+      res.status(200).json({ message: res.__('Requested updated successfully'), updatedRequest });
     } catch (error) {
       return res.status(500).json({ error: res.__('Internal server error!') });
     }
